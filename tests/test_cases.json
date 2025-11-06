@@ -1,0 +1,42 @@
+[
+  {
+    "text": "Hôm nay trời đẹp quá!",
+    "expected": "POSITIVE"
+  },
+  {
+    "text": "Món ăn rat ngon, tôi rất thích!",
+    "expected": "POSITIVE"
+  },
+  {
+    "text": "Dịch vụ tệ, nhân viên thái độ xấu.",
+    "expected": "NEGATIVE"
+  },
+  {
+    "text": "Sản phẩm kém chất lượng, giá lại đắt.",
+    "expected": "NEGATIVE"
+  },
+  {
+    "text": "Bình thường thôi, không có gì đặc biệt.",
+    "expected": "NEUTRAL"
+  },
+  {
+    "text": "Tôi không biết nói gì về điều này.",
+    "expected": "NEUTRAL"
+  },
+  {
+    "text": "Tuyệt vời! Đây là trải nghiệm tốt nhất.",
+    "expected": "POSITIVE"
+  },
+  {
+    "text": "Thất vọng quá, lãng phí tiền bạc.",
+    "expected": "NEGATIVE"
+  },
+  {
+    "text": "Cũng được, chấp nhận được.",
+    "expected": "NEUTRAL"
+  },
+  {
+    "text": "Rất hài lòng với chất lượng sản phẩm!",
+    "expected": "POSITIVE"
+  }
+]
