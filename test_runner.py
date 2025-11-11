@@ -7,9 +7,10 @@
 
 import json
 import sys
+import argparse
 from collections import defaultdict
 from preprocess import normalize_vi
-from nlp import predict_sentiment
+from nlp import predict_sentiment, get_sentiment_pipeline
 
 def load_test_cases(file_path: str = "tests/test_cases.json"):
     """Load test cases from JSON file."""
@@ -23,12 +24,27 @@ def run_tests():
     print("Vietnamese Sentiment Assistant - Test Runner")
     print("=" * 60)
     
+    # Parse CLI args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--debug", action="store_true", help="Print raw pipeline output (label+score) before mapping")
+    parser.add_argument("--extra", action="store_true", help="Also run tests/test_cases_extra.json if exists")
+    args, _ = parser.parse_known_args()
+
     # Load test cases
     try:
         test_cases = load_test_cases()
     except FileNotFoundError:
         print("❌ Error: tests/test_cases.json not found!")
         sys.exit(1)
+
+    # Optionally load extra cases
+    if args.extra:
+        try:
+            with open("tests/test_cases_extra.json", "r", encoding="utf-8") as f:
+                extra = json.load(f)
+                test_cases.extend(extra)
+        except FileNotFoundError:
+            print("⚠️ Extra tests file not found: tests/test_cases_extra.json")
     
     print(f"\nRunning {len(test_cases)} test cases...\n")
     
@@ -39,19 +55,29 @@ def run_tests():
     for i, case in enumerate(test_cases, 1):
         text = case["text"]
         expected = case["expected"]
-        
-        # Preprocess and predict
+
+        # Preprocess and predict (use model default threshold)
         normalized = normalize_vi(text)
-        predicted, score = predict_sentiment(normalized, neutral_threshold=0.50)
-        
+        # If debug, show raw pipeline output
+        if args.debug:
+            try:
+                pipe = get_sentiment_pipeline()
+                raw = pipe(normalized)[0]
+                print(f"   RAW PIPELINE: {raw}")
+            except Exception as e:
+                print(f"   (debug) could not call pipeline: {e}")
+
+        # Use predict_sentiment default threshold so behavior matches the app
+        predicted, score = predict_sentiment(normalized)
+
         # Store result
         is_correct = predicted == expected
         results.append(is_correct)
         confusion_matrix[expected][predicted] += 1
-        
-        # Print result
+
+        # Print result (show original and normalized short forms)
         status = "✓" if is_correct else "✗"
-        print(f"{status} Test {i:2d}: {text[:50]:50s} | Expected: {expected:8s} | Predicted: {predicted:8s} ({score:.2f})")
+        print(f"{status} Test {i:2d}: {text[:40]:40s} | Norm: {normalized[:40]:40s} | Expected: {expected:8s} | Predicted: {predicted:8s} ({score:.2f})")
     
     # Calculate accuracy
     accuracy = sum(results) / len(results)

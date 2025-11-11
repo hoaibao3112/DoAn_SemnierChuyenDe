@@ -3,6 +3,11 @@
 #   replace vulgar typos (rat->rất, hom->hôm, hnay->hôm nay...), optional underthesea.
 # - Keep it deterministic and fast; limit length to 200 chars.
 
+import re
+import functools
+
+
+@functools.lru_cache(maxsize=2048)
 def normalize_vi(text: str, use_tokenize: bool = False) -> str:
     """
     Normalize Vietnamese text for sentiment analysis.
@@ -15,16 +20,81 @@ def normalize_vi(text: str, use_tokenize: bool = False) -> str:
         Normalized text (lowercase, typos fixed, trimmed)
     """
     # Basic normalization
+    if not isinstance(text, str):
+        text = str(text or "")
     text = text.strip().lower()
-    
-    # Common Vietnamese typo corrections
+
+    # Quick cleanup: normalize punctuation and repeated spaces
+    text = re.sub(r"[\t\n\r]+", " ", text)
+    text = re.sub(r"[""'”“‘’]+", "", text)
+    text = re.sub(r"[\-_=+*/\\]+", " ", text)
+
+    # Helper: replace whole words using word boundaries to avoid substring mistakes
+    def replace_words(s: str, mapping: dict) -> str:
+        for k, v in mapping.items():
+            pattern = r"\b" + re.escape(k) + r"\b"
+            s = re.sub(pattern, v, s)
+        return s
+
+    # Mapping for common abbreviations / no-diacritic tokens -> corrected forms
+    nodiac_map = {
+        "hom": "hôm",
+        "hnay": "hôm nay",
+        "hn": "hôm nay",
+        "rat": "rất",
+        "ratvui": "rất vui",
+        "rat vui": "rất vui",
+        "buon": "buồn",
+        "that bai": "thất bại",
+        "thatbai": "thất bại",
+        "met moi": "mệt mỏi",
+        "metmoi": "mệt mỏi",
+        "cam on": "cảm ơn",
+        "camon": "cảm ơn",
+        "cam on ban": "cảm ơn bạn",
+        "toi": "tôi",
+        "ban": "bạn",
+        "khong": "không",
+        "ko": "không",
+        "k": "không",
+        "dk": "được",
+        "dc": "được",
+        "ngon": "ngon",
+        "tot": "tốt",
+        "dep": "đẹp",
+        "xau": "xấu",
+        "tuyet": "tuyệt",
+        "tuyet voi": "tuyệt vời",
+        "tuyetvoi": "tuyệt vời",
+        "te": "tệ",
+        "dang": "đang",
+        "chu": "chưa",
+        "bt": "bình thường",
+        "binh thuong": "bình thường",
+        "mon an": "món ăn",
+        "monan": "món ăn",
+        "dich vu": "dịch vụ",
+        "dichvu": "dịch vụ",
+        "san pham": "sản phẩm",
+        "sanpham": "sản phẩm",
+        "nhan vien": "nhân viên",
+        "thai do": "thái độ",
+        "chat luong": "chất lượng",
+        "rat vui": "rất vui",
+        "rất vui": "rất vui",
+    }
+
+    # More general typo fixes (including spaced variants)
     typo_map = {
-        " rat ": " rất ",
+        "rat ": "rất ",
         " hom ": " hôm ",
         " hnay ": " hôm nay ",
+        " h nay ": " hôm nay ",
         " dc ": " được ",
         " ko ": " không ",
         " k ": " không ",
+        " kh ": " không ",
+        " khong ": " không ",
         " cx ": " cũng ",
         " vs ": " với ",
         " voi ": " với ",
@@ -36,7 +106,6 @@ def normalize_vi(text: str, use_tokenize: bool = False) -> str:
         " tot ": " tốt ",
         " dep ": " đẹp ",
         " xau ": " xấu ",
-        " te ": " tệ ",
         " j ": " gì ",
         " gi ": " gì ",
         " lam ": " làm ",
@@ -44,30 +113,28 @@ def normalize_vi(text: str, use_tokenize: bool = False) -> str:
         " ms ": " mới ",
         " nua ": " nữa ",
         " thi ": " thì ",
+        " cuc ": " cực ",
+        " sieu ": " siêu ",
+        " tuyet ": " tuyệt ",
+        " that vong ": " thất vọng ",
+        " hai long ": " hài lòng ",
+        " kem ": " kém ",
+        " nhan vien ": " nhân viên ",
+        " thai do ": " thái độ ",
+        " chat luong ": " chất lượng ",
+        " san pham ": " sản phẩm ",
+        " dich vu ": " dịch vụ ",
+        " mon an ": " món ăn ",
+        " binh thuong ": " bình thường ",
+        " bt ": " bình thường ",
     }
-    
-    # Apply typo corrections (with word boundaries)
-    for typo, correct in typo_map.items():
-        text = text.replace(typo, correct)
-    
-    # Handle start/end typos
-    start_typo_map = {
-        "rat ": "rất ",
-        "hom ": "hôm ",
-        "ko ": "không ",
-        "k ": "không ",
-        "dc ": "được ",
-        "wa ": "quá ",
-        "qua ": "quá ",
-        "tot ": "tốt ",
-        "dep ": "đẹp ",
-        "xau ": "xấu ",
-        "te ": "tệ ",
-    }
-    
-    for typo, correct in start_typo_map.items():
-        if text.startswith(typo):
-            text = correct + text[len(typo):]
+
+    # If text contains no Vietnamese diacritics, apply nodiac_map first
+    if not re.search(r"[\u00C0-\u1EF9]", text):
+        text = replace_words(text, nodiac_map)
+
+    # Apply general typo corrections
+    text = replace_words(text, typo_map)
     
     # Optional: use underthesea for word tokenization
     if use_tokenize:

@@ -38,5 +38,30 @@
   {
     "text": "Rất hài lòng với chất lượng sản phẩm!",
     "expected": "POSITIVE"
+  },
+  {
+    "text": "Quá tuyệt vời, tôi rất yêu thích!",
+    "expected": "POSITIVE"
+  },
+  {
+    "text": "Siêu tốt, dịch vụ tuyệt vời!",
+    "expected": "POSITIVE"
+  },
+  {
+    "text": "Chán quá, không muốn dùng nữa.",
+    "expected": "NEGATIVE"
+  },
+  {
+    "text": "Tệ hại, lần sau không quay lại.",
+    "expected": "NEGATIVE"
+  },
+  {
+    "text": "OK, bình thường.",
+    "expected": "NEUTRAL"
+  }
+  ,
+  {
+    "text": "Công việc ổn định",
+    "expected": "NEUTRAL"
   }
 ]

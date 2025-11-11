@@ -12,6 +12,7 @@ import pandas as pd
 from preprocess import normalize_vi
 from nlp import predict_sentiment
 from db import add_record, list_latest, init_db
+from reclassify_db import reclassify_all
 
 # Initialize database on app startup
 init_db()
@@ -53,7 +54,7 @@ if classify_btn:
                 # Normalize Vietnamese text
                 normalized_text = normalize_vi(user_input)
                 
-                # Predict sentiment
+                # Predict sentiment (follow SPEC: threshold = 0.50)
                 label, score = predict_sentiment(normalized_text, neutral_threshold=0.50)
                 
                 # Save to database
@@ -81,6 +82,20 @@ with col_title:
 with col_reload:
     if st.button("🔄 Tải lại lịch sử", use_container_width=True):
         st.rerun()
+
+    # Reclassify history button (update records using current pipeline)
+    if st.button("♻️ Cập nhật lịch sử (Reclassify)", use_container_width=True):
+        with st.spinner("Đang cập nhật lịch sử... Vui lòng chờ (có thể vài giây)"):
+            try:
+                updated = reclassify_all(limit=5000)
+                st.success(f"Đã cập nhật {updated} bản ghi theo logic hiện tại.")
+                # Some Streamlit versions don't have experimental_rerun; use st.rerun()
+                try:
+                    st.rerun()
+                except Exception:
+                    st.info("Vui lòng nhấn 'Tải lại lịch sử' để làm mới giao diện.")
+            except Exception as e:
+                st.error(f"Lỗi khi cập nhật lịch sử: {e}")
 
 # Fetch and display history
 history = list_latest(limit=50)
