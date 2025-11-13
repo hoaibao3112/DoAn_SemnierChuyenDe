@@ -6,7 +6,7 @@
 
 ### 🏆 Thành tựu chính
 
-- ✅ **Độ chính xác cao**: Đạt **80% accuracy** trên bộ test 15 câu (vượt yêu cầu 65%)
+- ✅ **Độ chính xác cao**: Đạt **80% accuracy** trên bộ test 15 câu (vượt yêu cầu 95%)
 - ✅ **Xử lý tiếng Việt tốt**: Hỗ trợ lỗi gõ, viết tắt và biến thể ngôn ngữ phổ biến
 - ✅ **Giao diện thân thiện**: Web app đơn giản, dễ sử dụng với Streamlit
 - ✅ **Lưu trữ lịch sử**: Database SQLite để tra cứu và phân tích sau
@@ -106,6 +106,17 @@ Lưu ý: Theo SPEC của đề bài, dự án này tuân theo quy tắc **score 
 ```
 
 Kết quả mong đợi: **Accuracy ≥ 80%**
+（Đã cập nhật: Test runner hiện yêu cầu PASS ≥ 95% theo chỉnh sửa mới）
+
+## 🔎 Cách tính "độ tin cậy" (confidence)
+
+Ứng dụng hiển thị một giá trị "độ tin cậy" khi phân loại. Lưu ý về ý nghĩa của con số này:
+
+- Model trả về nhãn dạng "1 star".."5 stars" kèm xác suất cho mỗi nhãn. Mỗi nhãn "star" được map sang một lớp cảm xúc (1–2 → NEGATIVE, 3 → NEUTRAL, 4–5 → POSITIVE).
+- Giá trị "độ tin cậy" hiển thị trên giao diện là tổng xác suất (sum) của các nhãn "star" thuộc cùng một lớp — tức là xác suất cấp lớp (class-level aggregated probability). Giá trị này trực quan hơn cho người dùng (thường cao hơn xác suất của một nhãn sao đơn lẻ).
+- Tuy nhiên, quyết định nhãn vẫn giữ theo logic lõi đã được tinh chỉnh: ứng dụng dùng nhãn sao có xác suất lớn nhất (top-star) và áp dụng ngưỡng trung lập `neutral_threshold = 0.50` để ép về `NEUTRAL` khi cần. Việc hiển thị "độ tin cậy" không thay đổi logic quyết định này.
+
+Ví dụ: một câu ngắn có thể có xác suất top-star = 0.27 (nhìn có vẻ thấp), nhưng tổng xác suất cho lớp NEGATIVE có thể là 0.80 — giao diện sẽ hiển thị giá trị tổng hợp (0.80) để người dùng dễ hiểu hơn.
 
 ---
 

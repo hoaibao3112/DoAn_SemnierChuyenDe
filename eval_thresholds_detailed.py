@@ -21,7 +21,7 @@ def evaluate(threshold, tests):
     for case in tests:
         text = case["text"]
         expected = case["expected"]
-        norm = normalize_vi(text)
+        norm = normalize_vi(text, use_tokenize=True)
         pred, score = predict_sentiment(norm, neutral_threshold=threshold)
         confusion[expected][pred] += 1
         if pred == expected:

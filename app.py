@@ -39,10 +39,18 @@ with col1:
         max_chars=200
     )
 
+    # Small note about how confidence is reported in the UI
+    st.info(
+        "Lưu ý: Giá trị 'độ tin cậy' hiển thị là xác suất tổng hợp của lớp (POSITIVE/NEUTRAL/NEGATIVE)\n"
+        "(tổng các xác suất nhãn 'star' thuộc cùng lớp) — giúp trực quan hơn cho người dùng.\n"
+        "Quyết định nhãn vẫn tuân theo logic lõi của mô hình (nhãn sao có xác suất cao nhất với ngưỡng trung lập = 0.50).",
+        icon="ℹ️"
+    )
+
 with col2:
     st.write("")  # Spacing
     st.write("")  # Spacing
-    classify_btn = st.button("🔍 Phân loại cảm xúc", type="primary", use_container_width=True)
+    classify_btn = st.button("🔍 Phân loại cảm xúc", type="primary", width='stretch')
 
 # Classification logic
 if classify_btn:
@@ -51,8 +59,8 @@ if classify_btn:
     else:
         with st.spinner("Đang phân loại..."):
             try:
-                # Normalize Vietnamese text
-                normalized_text = normalize_vi(user_input)
+                # Normalize Vietnamese text (use tokenization if available for better matching)
+                normalized_text = normalize_vi(user_input, use_tokenize=True)
                 
                 # Predict sentiment (follow SPEC: threshold = 0.50)
                 label, score = predict_sentiment(normalized_text, neutral_threshold=0.50)
@@ -80,11 +88,11 @@ with col_title:
     st.subheader("📊 Lịch sử phân loại (50 bản ghi mới nhất)")
 
 with col_reload:
-    if st.button("🔄 Tải lại lịch sử", use_container_width=True):
+    if st.button("🔄 Tải lại lịch sử", width='stretch'):
         st.rerun()
 
     # Reclassify history button (update records using current pipeline)
-    if st.button("♻️ Cập nhật lịch sử (Reclassify)", use_container_width=True):
+    if st.button("♻️ Cập nhật lịch sử (Reclassify)", width='stretch'):
         with st.spinner("Đang cập nhật lịch sử... Vui lòng chờ (có thể vài giây)"):
             try:
                 updated = reclassify_all(limit=5000)
@@ -112,7 +120,7 @@ if history:
     # Display with styling
     st.dataframe(
         df,
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
         column_config={
             "ID": st.column_config.NumberColumn("ID", width="small"),

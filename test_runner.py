@@ -3,7 +3,7 @@
 # - Run normalize_vi + predict_sentiment.
 # - Print accuracy as percentage with 1 decimal place.
 # - Print compact confusion matrix counts (expected -> predicted).
-# - Exit code 0 if accuracy >= 0.65 else 1 (useful for CI).
+# - Exit code 0 if accuracy >= 0.95 else 1 (useful for CI).
 
 import json
 import sys
@@ -57,7 +57,7 @@ def run_tests():
         expected = case["expected"]
 
         # Preprocess and predict (use model default threshold)
-        normalized = normalize_vi(text)
+        normalized = normalize_vi(text, use_tokenize=True)
         # If debug, show raw pipeline output
         if args.debug:
             try:
@@ -109,12 +109,13 @@ def run_tests():
     
     print("=" * 60)
     
-    # Exit with appropriate code
-    if accuracy >= 0.65:
-        print("\n✅ PASS: Accuracy >= 65%")
+    # Exit with appropriate code (raise pass threshold to 95%)
+    PASS_THRESHOLD = 0.95
+    if accuracy >= PASS_THRESHOLD:
+        print(f"\n✅ PASS: Accuracy >= {int(PASS_THRESHOLD*100)}%")
         sys.exit(0)
     else:
-        print(f"\n❌ FAIL: Accuracy < 65% (got {accuracy_pct:.1f}%)")
+        print(f"\n❌ FAIL: Accuracy < {int(PASS_THRESHOLD*100)}% (got {accuracy_pct:.1f}%)")
         sys.exit(1)
 
 

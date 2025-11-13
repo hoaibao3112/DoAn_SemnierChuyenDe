@@ -5,7 +5,7 @@
 2) Nhận 1 câu tiếng Việt và phân loại **POSITIVE / NEUTRAL / NEGATIVE** bằng **Transformer pre-trained** của Hugging Face (không fine-tuning).
 3) Lưu lịch sử vào **SQLite** (id, text, sentiment, score, timestamp).
 4) Hiển thị lịch sử (tối đa 50 bản ghi mới nhất).
-5) Độ chính xác ≥ **65%** trên bộ **10 test case** tiếng Việt có sẵn.
+5) Độ chính xác ≥ **95%** trên bộ **10 test case** tiếng Việt có sẵn.
 
 ## Chỉ định kỹ thuật
 - Model mặc định: `nlptown/bert-base-multilingual-uncased-sentiment`.
@@ -28,5 +28,5 @@
 - App khởi động < 3s sau khi tải model lần đầu (cache pipeline).
 - Giao diện có đủ 4 thành phần: input, button, label kết quả, lịch sử.
 - DB có đúng 5 cột; `timestamp` dạng `YYYY-MM-DD HH:MM:SS`.
-- Test runner báo `Accuracy >= 65%`.
+- Test runner báo `Accuracy >= 95%`.
 - Lỗi nhập liệu (<5 ký tự) có popup cảnh báo và **không** lưu DB.

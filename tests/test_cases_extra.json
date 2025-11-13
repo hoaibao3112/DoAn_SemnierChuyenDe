@@ -1,6 +1,18 @@
 [
   {"text": "Mon an rat ngon", "expected": "POSITIVE"},
   {"text": "cam on ban rat nhieu", "expected": "POSITIVE"},
+  {"text": "metmoi qua hom nay", "expected": "NEGATIVE"},
+  {"text": "ko tot", "expected": "NEGATIVE"},
+  {"text": "rat hay", "expected": "POSITIVE"},
+  {"text": "toi buon vi thatbai", "expected": "NEGATIVE"},
+  {"text": "ok binh thuong", "expected": "NEUTRAL"},
+  {"text": "toi khong biet", "expected": "NEUTRAL"},
+  {"text": "phim nay hay lam", "expected": "POSITIVE"},
+  {"text": "san pham kem chat luong", "expected": "NEGATIVE"},
+
+
+  {"text": "Mon an rat ngon", "expected": "POSITIVE"},
+  {"text": "cam on ban rat nhieu", "expected": "POSITIVE"},
   {"text": "ko tot", "expected": "NEGATIVE"},
   {"text": "buon vi that bai", "expected": "NEGATIVE"},
   {"text": "hom nay troi dep", "expected": "POSITIVE"},
