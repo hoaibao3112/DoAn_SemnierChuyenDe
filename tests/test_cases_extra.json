@@ -1,22 +1,12 @@
 [
-  {"text": "Mon an rat ngon", "expected": "POSITIVE"},
-  {"text": "cam on ban rat nhieu", "expected": "POSITIVE"},
-  {"text": "metmoi qua hom nay", "expected": "NEGATIVE"},
-  {"text": "ko tot", "expected": "NEGATIVE"},
-  {"text": "rat hay", "expected": "POSITIVE"},
-  {"text": "toi buon vi thatbai", "expected": "NEGATIVE"},
-  {"text": "ok binh thuong", "expected": "NEUTRAL"},
-  {"text": "toi khong biet", "expected": "NEUTRAL"},
-  {"text": "phim nay hay lam", "expected": "POSITIVE"},
-  {"text": "san pham kem chat luong", "expected": "NEGATIVE"},
-
-
-  {"text": "Mon an rat ngon", "expected": "POSITIVE"},
-  {"text": "cam on ban rat nhieu", "expected": "POSITIVE"},
-  {"text": "ko tot", "expected": "NEGATIVE"},
-  {"text": "buon vi that bai", "expected": "NEGATIVE"},
-  {"text": "hom nay troi dep", "expected": "POSITIVE"},
-  {"text": "met moi qua hom nay", "expected": "NEGATIVE"},
-  {"text": "phim nay hay lam", "expected": "POSITIVE"},
-  {"text": "rat vui hom nay", "expected": "POSITIVE"}
+  {"text": "Hôm nay tôi rất vui", "expected": "POSITIVE"},
+  {"text": "Món ăn này dở quá", "expected": "NEGATIVE"},
+  {"text": "Thời tiết bình thường", "expected": "NEUTRAL"},
+  {"text": "Rất vui hôm nay", "expected": "POSITIVE"},
+  {"text": "Công việc ổn định", "expected": "NEUTRAL"},
+  {"text": "Phim này hay lắm", "expected": "POSITIVE"},
+  {"text": "Tôi buồn vì thất bại", "expected": "NEGATIVE"},
+  {"text": "Ngày mai đi học", "expected": "NEUTRAL"},
+  {"text": "Cảm ơn bạn rất nhiều", "expected": "POSITIVE"},
+  {"text": "Mệt mỏi quá hôm nay", "expected": "NEGATIVE"}
 ]

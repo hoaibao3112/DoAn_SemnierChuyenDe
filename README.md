@@ -1,184 +1,125 @@
-# 🎭 Vietnamese Sentiment Assistant
+# Vietnamese Sentiment Assistant
 
 ## Giới thiệu
 
-**Vietnamese Sentiment Assistant** là ứng dụng phân tích cảm xúc văn bản tiếng Việt sử dụng công nghệ Machine Learning tiên tiến. Dự án được xây dựng với mục tiêu phân loại tự động cảm xúc của người dùng thông qua các câu văn tiếng Việt, hỗ trợ doanh nghiệp và tổ chức hiểu rõ hơn về phản hồi của khách hàng.
+Vietnamese Sentiment Assistant là một ứng dụng phân tích cảm xúc cho câu tiếng Việt. Ứng dụng sử dụng mô hình pre-trained qua Hugging Face pipeline, kèm theo một lớp tiền xử lý và một vài luật hậu xử lý để cải thiện kết quả cho ngôn ngữ tiếng Việt.
 
-### 🏆 Thành tựu chính
+Ứng dụng nhận một câu tiếng Việt làm đầu vào, trả về nhãn cảm xúc thuộc một trong ba lớp: POSITIVE, NEUTRAL, NEGATIVE; đồng thời lưu kết quả vào cơ sở dữ liệu SQLite kèm timestamp.
 
-- ✅ **Độ chính xác cao**: Đạt **80% accuracy** trên bộ test 15 câu (vượt yêu cầu 95%)
-- ✅ **Xử lý tiếng Việt tốt**: Hỗ trợ lỗi gõ, viết tắt và biến thể ngôn ngữ phổ biến
-- ✅ **Giao diện thân thiện**: Web app đơn giản, dễ sử dụng với Streamlit
-- ✅ **Lưu trữ lịch sử**: Database SQLite để tra cứu và phân tích sau
-- ✅ **Hiệu năng tối ưu**: Pipeline được cache, phản hồi nhanh chóng
+## Tính năng chính
 
-### 🎯 Tính năng
+- Phân loại cảm xúc 3 lớp: POSITIVE / NEUTRAL / NEGATIVE
+- Tiền xử lý văn bản tiếng Việt: chuẩn hóa, sửa lỗi gõ phổ biến và map viết tắt/no-diacritic
+- Sử dụng pipeline Hugging Face (model mặc định: nlptown/bert-base-multilingual-uncased-sentiment)
+- Giao diện web đơn giản bằng Streamlit
+- Lưu trữ kết quả vào SQLite với các trường: id, text, sentiment, score, timestamp
+- Bộ kiểm thử tự động (pytest + test_runner) để đánh giá accuracy và in confusion matrix
 
-- 🔍 **Phân loại 3 cảm xúc**: **POSITIVE** (tích cực) / **NEUTRAL** (trung lập) / **NEGATIVE** (tiêu cực)
-- 🤖 **Model AI mạnh mẽ**: `nlptown/bert-base-multilingual-uncased-sentiment` từ Hugging Face
-- 💾 **Lưu trữ thông minh**: SQLite database với timestamp đầy đủ
-- 🌐 **Giao diện web**: Streamlit UI hiện đại, responsive
-- 📊 **Hiển thị lịch sử**: Xem 50 bản ghi phân loại mới nhất
-- ⚡ **Tiền xử lý nâng cao**: Tự động sửa lỗi gõ, chuẩn hóa văn bản tiếng Việt
-- ✅ **Test suite đầy đủ**: 15 test cases với confusion matrix chi tiết
+## Yêu cầu hệ thống
 
-### 📈 Kết quả đánh giá
+- Python 3.8 trở lên
+- Truy cập Internet khi lần đầu tải model (sẽ được cache sau đó)
+- Các thư viện có trong `requirements.txt`
 
-```
-Accuracy: 80.0% (12/15 test cases)
-
-Confusion Matrix:
-- POSITIVE: 5/6 đúng (83.3%)
-- NEUTRAL:  4/4 đúng (100%)
-- NEGATIVE: 3/5 đúng (60%)
-```
-
-## 📋 Yêu cầu hệ thống
-
-- Python 3.8+
-- pip
-
-## 🚀 Cài đặt
+## Cài đặt
 
 ### Windows (PowerShell)
 
 ```powershell
-# Tạo môi trường ảo
 python -m venv .venv
-
-# Kích hoạt môi trường ảo
 .\.venv\Scripts\Activate.ps1
-
-# Cài đặt dependencies
 pip install -r requirements.txt
 ```
 
-### Linux/macOS
+### Linux / macOS
 
 ```bash
-# Tạo môi trường ảo
 python -m venv .venv
-
-# Kích hoạt môi trường ảo
 source .venv/bin/activate
-
-# Cài đặt dependencies
 pip install -r requirements.txt
 ```
 
-## 📦 Cấu trúc dự án
+## Cấu trúc dự án (tóm tắt)
 
 ```
 DoAnSemnierChuyenDe/
-├── app.py                     # Streamlit UI - Giao diện web chính
-├── nlp.py                     # Hugging Face model logic với cached pipeline
-├── preprocess.py              # Vietnamese text preprocessing (30+ typo mappings)
-├── db.py                      # SQLite database handlers
-├── test_runner.py             # Test suite runner với confusion matrix
-├── eval_thresholds.py         # Script đánh giá threshold (optional)
+├── app.py
+├── nlp.py
+├── preprocess.py
+├── db.py
+├── test_runner.py
+├── eval_thresholds.py
+├── eval_thresholds_detailed.py
 ├── tests/
-│   └── test_cases.json        # 15 test cases đa dạng
-├── requirements.txt           # Dependencies (streamlit, transformers, torch, pandas, underthesea)
-├── README.md                  # Tài liệu này
-├── SPEC.md                    # Tài liệu yêu cầu dự án
-└── .gitignore                 # Git ignore rules
+├── requirements.txt
+├── README.md
+├── SPEC.md
+└── .gitignore
 ```
 
-## 🎮 Cách chạy dự án
+## Cách chạy
 
-### Bước 1: Kích hoạt môi trường ảo
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
+1. Kích hoạt môi trường ảo theo hướng dẫn ở trên.
+2. Chạy ứng dụng web:
 
-### Bước 2: Chạy ứng dụng web
 ```powershell
 streamlit run app.py
 ```
 
-Trình duyệt sẽ tự động mở tại `http://localhost:8501`
+3. Chạy test runner để đánh giá accuracy và in confusion matrix:
 
-Lưu ý: Theo SPEC của đề bài, dự án này tuân theo quy tắc **score < 0.50 => NEUTRAL**. Vì vậy code mặc định hiện đang sử dụng ngưỡng trung lập `neutral_threshold = 0.50` để đảm bảo tính tương thích với yêu cầu chấm điểm.
-
-### Bước 3: Kiểm tra độ chính xác (Optional)
 ```powershell
 .\.venv\Scripts\python.exe test_runner.py
 ```
 
-Kết quả mong đợi: **Accuracy ≥ 80%**
-（Đã cập nhật: Test runner hiện yêu cầu PASS ≥ 95% theo chỉnh sửa mới）
+Để chạy test mở rộng với file extra:
 
-## 🔎 Cách tính "độ tin cậy" (confidence)
+```powershell
+.\.venv\Scripts\python.exe test_runner.py --extra
+```
 
-Ứng dụng hiển thị một giá trị "độ tin cậy" khi phân loại. Lưu ý về ý nghĩa của con số này:
+Chạy pytest cho unit tests:
 
-- Model trả về nhãn dạng "1 star".."5 stars" kèm xác suất cho mỗi nhãn. Mỗi nhãn "star" được map sang một lớp cảm xúc (1–2 → NEGATIVE, 3 → NEUTRAL, 4–5 → POSITIVE).
-- Giá trị "độ tin cậy" hiển thị trên giao diện là tổng xác suất (sum) của các nhãn "star" thuộc cùng một lớp — tức là xác suất cấp lớp (class-level aggregated probability). Giá trị này trực quan hơn cho người dùng (thường cao hơn xác suất của một nhãn sao đơn lẻ).
-- Tuy nhiên, quyết định nhãn vẫn giữ theo logic lõi đã được tinh chỉnh: ứng dụng dùng nhãn sao có xác suất lớn nhất (top-star) và áp dụng ngưỡng trung lập `neutral_threshold = 0.50` để ép về `NEUTRAL` khi cần. Việc hiển thị "độ tin cậy" không thay đổi logic quyết định này.
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
 
-Ví dụ: một câu ngắn có thể có xác suất top-star = 0.27 (nhìn có vẻ thấp), nhưng tổng xác suất cho lớp NEGATIVE có thể là 0.80 — giao diện sẽ hiển thị giá trị tổng hợp (0.80) để người dùng dễ hiểu hơn.
+## Tóm tắt kỹ thuật
 
----
+- Tiền xử lý (`preprocess.normalize_vi`): chuẩn hóa (lowercase), sửa lỗi gõ phổ biến, map các từ không dấu về dạng có dấu, và sử dụng tokenization nếu `underthesea` được cài.
+- Mô hình: pipeline `sentiment-analysis` từ transformers; mặc định dùng `nlptown/bert-base-multilingual-uncased-sentiment`.
+- Mapping: nhãn "star" (1..5) được map sang lớp cảm xúc: 1–2 → NEGATIVE, 3 → NEUTRAL, 4–5 → POSITIVE.
+- Quyết định nhãn: theo nhãn sao có xác suất cao nhất. Nếu xác suất top-star < `neutral_threshold` (mặc định 0.50) thì trả về NEUTRAL.
+- Post-processing: một số luật từ khoá và phủ định được áp dụng để điều chỉnh kết quả khi cần.
 
-## 🛠️ Công nghệ sử dụng
+## Độ tin cậy (confidence) — diễn giải
 
-### Backend & AI
-- **Python 3.8+**: Ngôn ngữ lập trình chính
-- **Transformers (Hugging Face)**: Thư viện AI/ML cho NLP
-- **PyTorch**: Framework deep learning
-- **nlptown/bert-base-multilingual-uncased-sentiment**: Pre-trained BERT model hỗ trợ đa ngôn ngữ
-- **Underthesea**: Thư viện NLP tiếng Việt (word tokenization, optional)
+Ứng dụng hiển thị một chỉ số "độ tin cậy" khi phân loại. Cách tính và ý nghĩa:
 
-### Frontend & Data
-- **Streamlit**: Framework web app nhanh và đơn giản
-- **SQLite**: Database nhẹ, không cần server
-- **Pandas**: Xử lý và hiển thị dữ liệu dạng bảng
+- Model trả về xác suất cho từng nhãn "1 star".."5 stars".
+- Ứng dụng tính tổng xác suất của các nhãn "star" thuộc cùng một lớp để có một xác suất cấp lớp (class-level aggregated probability). Giá trị này được dùng để hiển thị vì thường trực quan hơn cho người dùng.
+- Quyết định nhãn vẫn tuân theo logic top-star và `neutral_threshold = 0.50` (hiện tại là hành vi đã được đánh giá trên bộ test).
 
-### Kiến trúc
-- **Singleton Pattern**: Cache model pipeline để tăng tốc độ
-- **Parameterized Queries**: Bảo mật SQL injection
-- **Preprocessing Pipeline**: Chuẩn hóa văn bản đầu vào
+Ví dụ ngắn: một câu có top-star score = 0.27 nhưng tổng xác suất cho lớp NEGATIVE có thể là 0.80; UI sẽ hiển thị giá trị tổng hợp để người dùng dễ hiểu hơn.
 
----
+## Test và đánh giá
 
-## 💡 Ứng dụng thực tế
+- Tập test chính có trong `tests/test_cases.json` (15 cases). Có thể mở rộng bằng `tests/test_cases_extra.json`.
+- Sử dụng `eval_thresholds.py` và `eval_thresholds_detailed.py` để thử các giá trị `neutral_threshold` khác nhau và quan sát confusion matrix.
+- Ghi chú: test runner trong repository hiện đã được chỉnh để yêu cầu pass threshold là 95% (PASS nếu accuracy >= 0.95).
 
-### 1. Phân tích phản hồi khách hàng
-- Tự động phân loại review sản phẩm/dịch vụ
-- Phát hiện khách hàng không hài lòng để xử lý kịp thời
-- Thống kê xu hướng cảm xúc theo thời gian
+## Những thay đổi quan trọng đã thực hiện
 
-### 2. Giám sát mạng xã hội
-- Theo dõi phản ứng cộng đồng về thương hiệu
-- Phát hiện crisis truyền thông sớm
-- Đánh giá hiệu quả chiến dịch marketing
+- Bổ sung một số mapping trong `preprocess.py` để cải thiện chuẩn hoá no-diacritic và viết tắt.
+- Trong `nlp.py` tính toán aggregated class probability để hiển thị confidence trực quan hơn, đồng thời giữ nguyên logic quyết định nhãn theo top-star + `neutral_threshold` để duy trì accuracy đã được kiểm chứng.
+- `test_runner.py` đã được cập nhật để pass threshold là 95%.
 
-### 3. Hỗ trợ customer service
-- Ưu tiên xử lý tin nhắn tiêu cực
-- Phân loại ticket tự động
-- Đo lường mức độ hài lòng khách hàng
+## Hướng phát triển tiếp
 
-### 4. Nghiên cứu thị trường
-- Phân tích sentiment trong khảo sát
-- Hiểu insight khách hàng
-- So sánh với đối thủ cạnh tranh
+- Thay model sang một model thuần tiếng Việt (ví dụ phobert) để cải thiện chất lượng trên dữ liệu tiếng Việt.
+- Fine-tune model nếu có tập dữ liệu nhãn tiếng Việt đủ lớn.
+- Thêm CI (GitHub Actions) để tự động chạy `test_runner.py` và pytest khi có commit.
 
----
+## Ghi chú
 
-## 🎓 Học hỏi từ dự án
-
-### Kiến thức đạt được
-- ✅ Sử dụng pre-trained models từ Hugging Face
-- ✅ Xây dựng web app với Streamlit
-- ✅ Xử lý ngôn ngữ tự nhiên tiếng Việt
-- ✅ Thiết kế database và quản lý dữ liệu
-- ✅ Testing và evaluation trong ML
-- ✅ Git version control và GitHub workflow
-
-### Kỹ năng phát triển
-- 🔧 **NLP Engineering**: Preprocessing, model selection, threshold tuning
-- 💻 **Full-stack Development**: Backend (Python) + Frontend (Streamlit) + Database (SQLite)
-- 📊 **ML Evaluation**: Accuracy, confusion matrix, error analysis
-- 📝 **Documentation**: README, code comments, SPEC
-
----
+Nếu cần tôi có thể giúp thêm: mở rộng bộ test, chỉnh UI để hiển thị cả top-star score và class score, hoặc bổ sung CI. Xin cho biết lựa chọn bạn muốn tiếp theo.
