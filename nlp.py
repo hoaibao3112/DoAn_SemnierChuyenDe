@@ -55,10 +55,6 @@ STAR2SENT = {
 # Cache the pipeline (singleton pattern)
 @functools.lru_cache(maxsize=1)
 def get_sentiment_pipeline():
-    """
-    Load and cache the Hugging Face sentiment analysis pipeline.
-    This ensures the model is loaded only once.
-    """
     if HAS_TRANSFORMERS:
         return pipeline(
             "sentiment-analysis",
@@ -101,13 +97,6 @@ def get_sentiment_pipeline():
 
 
 def _lexicon_adjust(text: str, sentiment: str, score: float, neutral_threshold: float = 0.50) -> str:
-    """Adjust sentiment using simple keyword heuristics when model is uncertain.
-
-    Rules:
-    - If model predicts POSITIVE but a negative keyword exists and score < 0.6 => NEGATIVE
-    - If model predicts NEGATIVE but a positive keyword exists and score < 0.6 => POSITIVE
-    - Otherwise keep model label (unless score < threshold handled by caller)
-    """
     txt = text.lower()
     # Normalize underscores (from tokenization) to spaces for reliable substring checks
     txt_check = txt.replace("_", " ")
@@ -160,11 +149,6 @@ def _lexicon_adjust(text: str, sentiment: str, score: float, neutral_threshold: 
         # If there are multiple negative keywords, strongly negative.
         if neg_count >= 2:
             return "NEGATIVE"
-
-        # If at least one negative keyword appears together with an intensifier
-        # (e.g., "quá", "rất", "lắm"), treat as NEGATIVE. This handles cases
-        # like "mệt mỏi quá hôm nay" where single-token negative + intensifier
-        # clearly implies negative sentiment.
         intensifiers = {"quá", "rất", "rat", "lắm", "lam", "qua"}
         if neg_count >= 1 and any(iv in txt_check for iv in intensifiers):
             return "NEGATIVE"
@@ -199,18 +183,6 @@ def _lexicon_adjust(text: str, sentiment: str, score: float, neutral_threshold: 
 
 
 def predict_sentiment(text: str, neutral_threshold: float = 0.50) -> Tuple[str, float]:
-    """
-    Predict sentiment for Vietnamese text.
-    
-    Args:
-        text: Input text (already normalized)
-        neutral_threshold: Minimum confidence score threshold (default: 0.50)
-        
-    Returns:
-        Tuple of (label, score) where:
-        - label: POSITIVE, NEUTRAL, or NEGATIVE
-        - score: Confidence score (0.0 to 1.0)
-    """
     # Truncate long text for latency
     text = text[:256]
     

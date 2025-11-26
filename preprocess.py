@@ -3,16 +3,6 @@ import re
 import functools
 @functools.lru_cache(maxsize=2048)
 def normalize_vi(text: str, use_tokenize: bool = False) -> str:
-    """
-    Normalize Vietnamese text for sentiment analysis.
-    
-    Args:
-        text: Raw input text
-        use_tokenize: Whether to use underthesea word tokenization (optional)
-        
-    Returns:
-        Normalized text (lowercase, typos fixed, trimmed)
-    """
     # Basic normalization
     if not isinstance(text, str):
         text = str(text or "")
@@ -82,7 +72,6 @@ def normalize_vi(text: str, use_tokenize: bool = False) -> str:
         "rat vui": "rất vui",
         "rất vui": "rất vui",
     }
-
     # More general typo fixes (including spaced variants)
     typo_map = {
         "rat ": "rất ",

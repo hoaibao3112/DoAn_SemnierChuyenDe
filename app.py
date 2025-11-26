@@ -27,7 +27,6 @@ with col1:
         placeholder="Ví dụ: Hôm nay trời đẹp quá!",
         max_chars=200
     )
-    # Small note about how confidence is reported in the UI
     st.info(
         "Lưu ý: Giá trị 'độ tin cậy' hiển thị là xác suất tổng hợp của lớp (POSITIVE/NEUTRAL/NEGATIVE)\n"
         "(tổng các xác suất nhãn 'star' thuộc cùng lớp) — giúp trực quan hơn cho người dùng.\n"
@@ -72,14 +71,14 @@ st.divider()
 col_title, col_reload = st.columns([4, 1])
 
 with col_title:
-    st.subheader("📊 Lịch sử phân loại (50 bản ghi mới nhất)")
+    st.subheader("Lịch sử phân loại (50 bản ghi mới nhất)")
 
 with col_reload:
-    if st.button("🔄 Tải lại lịch sử", width='stretch'):
+    if st.button("Tải lại lịch sử", width='stretch'):
         st.rerun()
 
     # Reclassify history button (update records using current pipeline)
-    if st.button("♻️ Cập nhật lịch sử (Reclassify)", width='stretch'):
+    if st.button("Cập nhật lịch sử (Reclassify)", width='stretch'):
         with st.spinner("Đang cập nhật lịch sử... Vui lòng chờ (có thể vài giây)"):
             try:
                 updated = reclassify_all(limit=5000)
