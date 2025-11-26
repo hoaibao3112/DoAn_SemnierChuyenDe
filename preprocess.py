@@ -1,12 +1,6 @@
-# Copilot Directives:
-# - Implement normalize_vi(text, use_tokenize=False): lowercase, strip,
-#   replace vulgar typos (rat->rất, hom->hôm, hnay->hôm nay...), optional underthesea.
-# - Keep it deterministic and fast; limit length to 200 chars.
 
 import re
 import functools
-
-
 @functools.lru_cache(maxsize=2048)
 def normalize_vi(text: str, use_tokenize: bool = False) -> str:
     """

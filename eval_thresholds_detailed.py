@@ -1,6 +1,4 @@
-"""
-Detailed evaluation printing confusion matrix for each threshold.
-"""
+
 import json
 from collections import defaultdict
 from nlp import predict_sentiment

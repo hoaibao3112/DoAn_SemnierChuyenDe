@@ -1,6 +1,4 @@
-"""
-Evaluate test cases at different neutral_threshold values to see effect on accuracy.
-"""
+
 import json
 from nlp import predict_sentiment
 from preprocess import normalize_vi

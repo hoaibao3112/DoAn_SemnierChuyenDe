@@ -1,13 +1,3 @@
-# Copilot Directives:
-# - SQLite file "sentiments.db".
-# - Create table IF NOT EXISTS with columns:
-#   (id INTEGER PK AUTOINCREMENT, text TEXT NOT NULL,
-#    sentiment TEXT NOT NULL, score REAL, timestamp TEXT NOT NULL)
-# - Functions:
-#   add_record(text, sentiment, score) -> None
-#   list_latest(limit:int=50) -> List[Tuple]
-#   clear_all() -> None
-# - Always use parameterized queries (?) and context managers.
 
 import sqlite3
 from datetime import datetime

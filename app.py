@@ -1,11 +1,3 @@
-# Copilot Directives:
-# - Build Streamlit UI: one text_input, one "Phân loại cảm xúc" button,
-#   one "Tải lại lịch sử" button, and a dataframe (latest 50).
-# - On click: normalize_vi(text) -> predict_sentiment() -> save to SQLite.
-# - Validate: length >= 5; else st.error and return, no DB write.
-# - Use st.spinner when calling the pipeline. Handle exceptions gracefully.
-# - Never block UI: keep pipeline cached in nlp.py; do NOT re-create it here.
-# - Columns in history: ID, Text, Sentiment, Score (2 decimals), Time.
 
 import streamlit as st
 import pandas as pd
@@ -20,33 +12,28 @@ init_db()
 # Set page config
 st.set_page_config(
     page_title="Vietnamese Sentiment Assistant",
-    page_icon="🎭",
+    page_icon="",
     layout="wide"
 )
-
 # Header
-st.title("🎭 Vietnamese Sentiment Assistant")
+st.title(" Vietnamese Sentiment Assistant")
 st.markdown("Phân loại cảm xúc câu tiếng Việt: **POSITIVE** / **NEUTRAL** / **NEGATIVE**")
 st.divider()
-
 # Input section
 col1, col2 = st.columns([3, 1])
-
 with col1:
     user_input = st.text_input(
         "Nhập câu tiếng Việt:",
         placeholder="Ví dụ: Hôm nay trời đẹp quá!",
         max_chars=200
     )
-
     # Small note about how confidence is reported in the UI
     st.info(
         "Lưu ý: Giá trị 'độ tin cậy' hiển thị là xác suất tổng hợp của lớp (POSITIVE/NEUTRAL/NEGATIVE)\n"
         "(tổng các xác suất nhãn 'star' thuộc cùng lớp) — giúp trực quan hơn cho người dùng.\n"
         "Quyết định nhãn vẫn tuân theo logic lõi của mô hình (nhãn sao có xác suất cao nhất với ngưỡng trung lập = 0.50).",
-        icon="ℹ️"
+        icon="ℹ"
     )
-
 with col2:
     st.write("")  # Spacing
     st.write("")  # Spacing

@@ -1,4 +1,0 @@
-RAW PIPELINE: {'label': '5 stars', 'score': 0.5512998104095459}
-✓ Test  2: Món ăn rat ngon, tôi rất thích! | Norm: món ăn rất ngon, tôi rất thích! | Expected: POSITIVE | Predicted: POSITIVE (0.55)
-
-Caption: Hình 2 — Kết quả test runner (Test #2): raw pipeline (label+score) và dòng mapped tương ứng.
