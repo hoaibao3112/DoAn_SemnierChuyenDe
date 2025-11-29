@@ -36,12 +36,12 @@ with col1:
 with col2:
     st.write("")  # Spacing
     st.write("")  # Spacing
-    classify_btn = st.button("🔍 Phân loại cảm xúc", type="primary", width='stretch')
+    classify_btn = st.button(" Phân loại cảm xúc", type="primary", width='stretch')
 
 # Classification logic
 if classify_btn:
     if len(user_input.strip()) < 5:
-        st.error("⚠️ Vui lòng nhập ít nhất 5 ký tự!")
+        st.error("Câu Không hợp lệ,Thử Lại!")
     else:
         with st.spinner("Đang phân loại..."):
             try:
@@ -56,14 +56,14 @@ if classify_btn:
                 
                 # Display result with color coding
                 if label == "POSITIVE":
-                    st.success(f"✅ Kết quả: **{label}** (độ tin cậy: {score:.2f})")
+                    st.success(f" Kết quả: **{label}** (độ tin cậy: {score:.2f})")
                 elif label == "NEGATIVE":
-                    st.error(f"❌ Kết quả: **{label}** (độ tin cậy: {score:.2f})")
+                    st.error(f" Kết quả: **{label}** (độ tin cậy: {score:.2f})")
                 else:
-                    st.info(f"ℹ️ Kết quả: **{label}** (độ tin cậy: {score:.2f})")
+                    st.info(f"ℹ Kết quả: **{label}** (độ tin cậy: {score:.2f})")
                     
             except Exception as ex:
-                st.error(f"❌ Không phân loại được: {ex}")
+                st.error(f" Không phân loại được: {ex}")
 
 st.divider()
 

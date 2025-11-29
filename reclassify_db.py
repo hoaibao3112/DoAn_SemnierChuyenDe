@@ -8,10 +8,6 @@ DB_FILE = "sentiments.db"
 
 
 def reclassify_all(limit: int = 5000) -> int:
-    """Reclassify up to `limit` records in the DB using current pipeline.
-
-    Returns the number of records updated.
-    """
     init_db()
     updated = 0
     with sqlite3.connect(DB_FILE) as conn:

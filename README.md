@@ -119,7 +119,3 @@ Ví dụ ngắn: một câu có top-star score = 0.27 nhưng tổng xác suất 
 - Thay model sang một model thuần tiếng Việt (ví dụ phobert) để cải thiện chất lượng trên dữ liệu tiếng Việt.
 - Fine-tune model nếu có tập dữ liệu nhãn tiếng Việt đủ lớn.
 - Thêm CI (GitHub Actions) để tự động chạy `test_runner.py` và pytest khi có commit.
-
-## Ghi chú
-
-Nếu cần tôi có thể giúp thêm: mở rộng bộ test, chỉnh UI để hiển thị cả top-star score và class score, hoặc bổ sung CI. Xin cho biết lựa chọn bạn muốn tiếp theo.

@@ -12,7 +12,7 @@ from collections import defaultdict
 from preprocess import normalize_vi
 from nlp import predict_sentiment, get_sentiment_pipeline
 
-def load_test_cases(file_path: str = "tests/test_cases.json"):
+def load_test_cases(file_path: str = "tests/test_cases_extra.json"):
     """Load test cases from JSON file."""
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -28,23 +28,33 @@ def run_tests():
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", action="store_true", help="Print raw pipeline output (label+score) before mapping")
     parser.add_argument("--extra", action="store_true", help="Also run tests/test_cases_extra.json if exists")
+    parser.add_argument("--only-extra", action="store_true", help="Run only tests/test_cases_extra.json (ignore base tests)")
     args, _ = parser.parse_known_args()
 
     # Load test cases
     try:
-        test_cases = load_test_cases()
+        base_cases = load_test_cases()
     except FileNotFoundError:
         print("❌ Error: tests/test_cases.json not found!")
         sys.exit(1)
 
-    # Optionally load extra cases
-    if args.extra:
+    # Optionally load or replace with extra cases
+    if args.only_extra:
         try:
             with open("tests/test_cases_extra.json", "r", encoding="utf-8") as f:
-                extra = json.load(f)
-                test_cases.extend(extra)
+                test_cases = json.load(f)
         except FileNotFoundError:
-            print("⚠️ Extra tests file not found: tests/test_cases_extra.json")
+            print("❌ Extra tests file not found: tests/test_cases_extra.json")
+            sys.exit(1)
+    else:
+        test_cases = base_cases
+        if args.extra:
+            try:
+                with open("tests/test_cases_extra.json", "r", encoding="utf-8") as f:
+                    extra = json.load(f)
+                    test_cases.extend(extra)
+            except FileNotFoundError:
+                print("⚠️ Extra tests file not found: tests/test_cases_extra.json")
     
     print(f"\nRunning {len(test_cases)} test cases...\n")
     
