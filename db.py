@@ -6,9 +6,6 @@ from typing import List, Tuple
 DB_FILE = "sentiments.db"
 
 def init_db():
-    """
-    Initialize the SQLite database and create the table if it doesn't exist.
-    """
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
         cursor.execute("""

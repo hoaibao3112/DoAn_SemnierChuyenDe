@@ -6,7 +6,6 @@ from nlp import predict_sentiment
 from db import add_record, list_latest, init_db
 from reclassify_db import reclassify_all
 
-# Initialize database on app startup
 init_db()
 
 # Set page config

@@ -3,7 +3,7 @@ import re
 import functools
 from typing import Tuple
 
-# Try to import transformers' pipeline; if unavailable provide a lightweight fallback
+
 try:
     from transformers import pipeline
     HAS_TRANSFORMERS = True
@@ -11,36 +11,136 @@ except Exception:
     pipeline = None
     HAS_TRANSFORMERS = False
 
-# Simple lexicon-based adjustments to catch obvious mismatches
+
 NEGATIVE_KEYWORDS = {
-    "chán", "chán quá", "tệ", "tệ hại", "thất vọng",
-    "dở", "kém", "không tốt", "thất bại", "buồn", "mệt mỏi",
-    "nhân viên", "thái độ", "kém chất lượng", "giá đắt", "đắt"
+    # === Cảm xúc tiêu cực cơ bản ===
+    "chán", "chán quá", "tệ", "tệ hại", "thất vọng", "thất_vọng",
+    "dở", "dở quá", "kém", "không tốt", "thất bại", "thất_bại",
+    "buồn", "buồn quá", "buồn bã", "buồn_bã",
+    "mệt", "mệt mỏi", "mệt_mỏi", "mệt quá",
+    # === Phiên bản không dấu ===
+    "chan", "chan qua", "te", "te hai", "that vong", "thatvong",
+    "do", "do qua", "kem", "khong tot", "that bai", "thatbai",
+    "buon", "buon qua", "buon ba", "buonba",
+    "met", "met moi", "metmoi", "met qua",
+    # === Cảm xúc tiêu cực mở rộng ===
+    "giận", "tức giận", "tức_giận", "gian", "tuc gian", "tucgian",
+    "bực mình", "bực_mình", "buc minh", "bucminh",
+    "khó chịu", "khó_chịu", "kho chiu", "khochiu",
+    "sợ", "lo lắng", "lo_lắng", "so", "lo lang", "lolang",
+    "căng thẳng", "căng_thẳng", "cang thang", "cangthang", "stress",
+    "ghét", "ghet",
+    # === Từ tiêu cực về dịch vụ/sản phẩm ===
+    "kém chất lượng", "kém_chất_lượng", "kem chat luong",
+    "giá đắt", "giá_đắt", "gia dat", "giadat", "đắt", "dat", "quá đắt",
+    "không hài lòng", "không_hài_lòng", "khong hai long", "khonghailong",
+    "không thích", "không_thích", "khong thich", "khongthich",
+    "chậm", "cham", "bẩn", "ban",
+    # === Từ tiếng Anh tiêu cực ===
+    "bad", "terrible", "awful", "horrible",
+    # === Các cụm từ tiêu cực ===
+    "rất tệ", "rất_tệ", "rat te", "ratte",
+    "rất kém", "rất_kém", "rat kem", "ratkem",
+    "rất xấu", "rất_xấu", "rat xau", "ratxau",
+    "rất buồn", "rất_buồn", "rat buon", "ratbuon",
+    "xấu", "xấu quá", "xau", "xau qua",
 }
-# Negation words are handled with specific patterns (not raw negative keywords)
-NEGATION_WORDS = {"không", "ko", "k", "khong"}
+NEGATION_WORDS = {"không", "ko", "k", "khong", "kg", "kh", "hok", "hem", "chưa", "chua", "ch"}
 POSITIVE_KEYWORDS = {
-    "tuyệt", "tuyệt vời", "siêu", "tốt", "yêu thích", "rất vui", "vui", "hài lòng",
-    "hay", "hay lắm", "hay lam", "rat hay", "rất hay",
-    # Thêm từ ngữ khen ngắn phổ biến để bắt các câu praise không dấu/no-diacritic
-    "ngon", "rất ngon", "ngon quá", "thích", "rất thích"
-    , "cam on", "camon", "cam on ban", "rat ngon", "rat hay", "rat vui", "hay lam", "ok"
+    # === Cảm xúc tích cực cơ bản ===
+    "tuyệt", "tuyệt vời", "tuyệt_vời", "tuyệt hảo", "tuyệt_hảo",
+    "siêu", "siêu tốt", "siêu_tốt",
+    "tốt", "rất tốt", "rất_tốt", "quá tốt",
+    "vui", "rất vui", "rất_vui", "vui vẻ", "vui_vẻ", "vui quá",
+    "hài lòng", "hài_lòng", "rất hài lòng", "rất_hài_lòng",
+    "yêu", "yêu thích", "yêu_thích",
+    "thích", "rất thích", "rất_thích",
+    "hay", "hay lắm", "hay_lắm", "rất hay", "rất_hay",
+    "ngon", "rất ngon", "rất_ngon", "ngon quá",
+    "đẹp", "rất đẹp", "rất_đẹp", "đẹp quá",
+    # === Phiên bản không dấu ===
+    "tuyet", "tuyet voi", "tuyetvoi", "tuyet hao",
+    "sieu", "sieu tot",
+    "tot", "rat tot", "rattot", "qua tot",
+    "vui", "rat vui", "ratvui", "vui ve", "vuive",
+    "hai long", "hailong", "rat hai long",
+    "yeu", "yeu thich", "yeuthich",
+    "thich", "rat thich", "ratthich",
+    "hay", "hay lam", "haylam", "rat hay", "rathay",
+    "ngon", "rat ngon", "ratngon", "ngon qua",
+    "dep", "rat dep", "ratdep", "dep qua",
+    # === Cảm xúc tích cực mở rộng ===
+    "hạnh phúc", "hạnh_phúc", "hanh phuc", "hanhphuc",
+    "sung sướng", "sung_sướng", "sung suong",
+    "phấn khởi", "phấn_khởi", "phan khoi",
+    "xuất sắc", "xuất_sắc", "xuat sac", "xuatsac",
+    "hoàn hảo", "hoàn_hảo", "hoan hao", "hoanhao",
+    "tuyệt hảo", "tuyệt_hảo", "tuyet hao",
+    # === Từ cảm ơn ===
+    "cảm ơn", "cảm_ơn", "cam on", "camon",
+    "cảm ơn bạn", "cảm_ơn_bạn", "cam on ban", "camonban",
+    "cảm ơn nhiều", "cam on nhieu",
+    "cám ơn",
+    # === Từ tiếng Anh tích cực ===
+    "ok", "okie", "okela", "nice", "good", "great", "amazing", "perfect", "thanks", "thank",
+    # === Từ tăng cường tích cực ===
+    "cực kỳ", "cực_kỳ", "cuc ky", "cucky",
+    "vô cùng", "vô_cùng", "vo cung", "vocung",
+    "hết sức", "hết_sức", "het suc", "hetsuc",
+    "thật sự", "thật_sự", "that su", "thatsu",
+    # === Các cụm từ tích cực khác ===
+    "rẻ", "giá rẻ", "giá_rẻ", "re", "gia re", "giare",
+    "nhanh", "sạch", "sach",
 }
 
-# Gratitude phrases that should almost always be POSITIVE unless clearly negated
-GRATITUDE_KEYWORDS = {"cảm ơn", "cam on", "thank you", "cảm ơn bạn", "cám ơn"}
-
-# Keywords that usually indicate a neutral/stable statement (e.g., "công việc ổn định").
-# If these appear and the model is not highly confident for another polarity, prefer NEUTRAL.
-NEUTRAL_KEYWORDS = {"ổn định", "bình thường", "ổn", "ổn thôi", "ổn định công việc", "ổn định cuộc sống", "ngày mai đi học"}
-# Add more neutral/hedging phrases commonly used in Vietnamese
-NEUTRAL_KEYWORDS.update({"cũng được", "cung duoc", "chấp nhận", "chap nhan", "ok", "được", "duoc", "cũng duoc", "cung duoc"})
+GRATITUDE_KEYWORDS = {
+    "cảm ơn", "cảm_ơn", "cam on", "camon",
+    "cảm ơn bạn", "cảm_ơn_bạn", "cam on ban", "camonban",
+    "cảm ơn nhiều", "cam on nhieu",
+    "cám ơn", "thank you", "thanks", "thank",
+}
+NEUTRAL_KEYWORDS = {
+    # === Trung tính cơ bản ===
+    "ổn định", "ổn_định", "on dinh", "ondinh",
+    "bình thường", "bình_thường", "binh thuong", "binhthuong", "bt",
+    "ổn", "ổn thôi", "on", "on thoi",
+    # === Cụm từ trung tính ===
+    "ổn định công việc", "ổn định cuộc sống",
+    "ngày mai đi học", "ngày_mai đi học",
+    "cũng được", "cũng_được", "cung duoc", "cungduoc",
+    "tạm được", "tạm_được", "tam duoc", "tamduoc",
+    "tạm ổn", "tạm_ổn", "tam on", "tamon",
+    "chấp nhận", "chấp_nhận", "chap nhan", "chapnhan",
+    "chấp nhận được", "chapnhanduoc",
+    "không có gì", "khong co gi",
+    "không sao", "không_sao", "khong sao", "khongsao",
+    "trung bình", "trung_bình", "trung binh", "trungbinh", "tb",
+    # === Từ ok/được ===
+    "ok", "được", "duoc",
+}
 
 # Strong negative keywords that should override to NEGATIVE even when model score is low
-STRONG_NEGATIVE_KEYWORDS = {"dở", "dở quá", "tệ", "tệ hại", "dở quá", "kém", "không hài lòng"}
+STRONG_NEGATIVE_KEYWORDS = {
+    "dở", "dở quá", "dở_quá",
+    "tệ", "tệ hại", "tệ_hại", "rất tệ", "rất_tệ",
+    "kém", "rất kém", "rất_kém",
+    "không hài lòng", "không_hài_lòng",
+    # Phiên bản không dấu
+    "do", "do qua", "te", "te hai", "rat te",
+    "kem", "rat kem", "khong hai long",
+}
 
 # Add some positive phrases that model often under-scores
-POSITIVE_EXTRA = {"hài lòng", "hai long", "cảm ơn", "cảm ơn bạn", "cam on ban", "hài_lòng"}
+POSITIVE_EXTRA = {
+    "hài lòng", "hài_lòng", "hai long", "hailong",
+    "cảm ơn", "cảm_ơn", "cảm ơn bạn", "cảm_ơn_bạn",
+    "cam on", "cam on ban", "camonban",
+    "rất hài lòng", "rất_hài_lòng", "rat hai long",
+    # Thêm từ tích cực khác
+    "tuyệt vời", "tuyệt_vời", "tuyet voi", "tuyetvoi",
+    "xuất sắc", "xuất_sắc", "xuat sac", "xuatsac",
+    "hoàn hảo", "hoàn_hảo", "hoan hao", "hoanhao",
+}
 POSITIVE_KEYWORDS.update(POSITIVE_EXTRA)
 
 # Star rating to sentiment mapping
